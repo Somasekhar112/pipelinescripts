@@ -1,0 +1,32 @@
+pipeline {
+
+agent any
+    
+    tools {
+       jdk 'JDK1.8'
+       maven 'M3'
+    }
+stages{
+    
+    stage('SCM checkout'){
+    steps{
+        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '8163482d-b946-4458-b61b-15b3e0fca829', url: 'https://github.com/Somasekhar112/maventest.git']]])    
+        
+    }
+    }
+
+    stage('Compile-Package'){
+    steps{
+        echo 'Before compile'
+        sh 'mvn -f test/pom.xml clean package'
+        echo 'after compile'
+    }
+    }
+    stage('Deploy Package'){
+        steps{
+            deploy adapters: [tomcat9(credentialsId: 'f5188ec1-9955-4cab-ad86-bacecd1c676f', path: '', url: 'http://localhost:8081/')], contextPath: null, war: '**/*.war'  
+            
+        }
+    }
+}
+}
