@@ -1,0 +1,11 @@
+node {
+  stage('SCM') {
+    git 'https://github.com/Somasekhar112/sonar1.git'
+  }
+  stage('SonarQube analysis') {
+      def scannerhome = tool 'Sonar_Scanner' ;
+    withSonarQubeEnv(credentialsId: 'sonartoken') {
+     sh "${scannerHome}/bin/sonar-scanner"
+    }
+    }
+}
